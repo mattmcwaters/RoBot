@@ -71,10 +71,14 @@ public class menuGUI extends JFrame {
         if(standardPressed){
             return "Standard";
         }
-        else{
+        if(waitlistPressed){
             return "Waitlist";
         }
+        else{
+            return "";
+        }
     }
+
 
     private void showAllPanels(){
         pOne.setVisible(true);

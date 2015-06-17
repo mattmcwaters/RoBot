@@ -18,7 +18,6 @@ import java.util.logging.Level;
 
 
 public class Main {
-
     public static void main(String [] args) throws IOException {
         menuGUI menu = new menuGUI();
         boolean Continue = true;
@@ -35,23 +34,22 @@ public class Main {
             if(menu.isPressed().equals("Standard")){
                 Continue = false;
             }
+            if(menu.isPressed().equals("Waitlist")){
+                Continue = false;
+            }
         }
-        standardGUI userInterface = new standardGUI();
-        userInterface.setVisible(true);
+
+
         if(menu.isPressed().equals("Standard")){
+            standardGUI userInterface = new standardGUI("Standard");
             userInterface.setVisible(true);
             menu.setVisible(false);
 
-
-
             PrintStream printStream = new PrintStream(new customConsole(userInterface.textArea));
-
             PrintStream standardOut = System.out;
             PrintStream standardErr = System.err;
-
             System.setOut(printStream);
             System.setErr(printStream);
-
 
             List<String> courseCodeList = new ArrayList<String>();
             List<String> sectionCodeList = new ArrayList<String>();

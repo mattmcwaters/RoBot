@@ -70,7 +70,7 @@ public class standardGUI extends JFrame {
     JTextField lectureFive = new JTextField("Lecture Section");
     JLabel labelFive = new JLabel("Class 5");
 
-    public standardGUI() {
+    public standardGUI(String option) {
         super("RoBot");
         setSize(400, 300);
         setResizable(true);
