@@ -65,44 +65,18 @@ public class Main {
 
         WebClient wc = new WebClient();
 
-        boolean Continue = true;
-
-
-        Scanner userInput = new Scanner(System.in);
-        int j = 1;
-
-        /*
-        while(Continue) {
-            System.out.print("Please enter course number " + j + "\n");
-            courseCodeList.add(userInput.nextLine());
-            System.out.print("Please enter section code for course number " + j + "\n");
-            sectionCodeList.add(userInput.nextLine());
-            System.out.print("Please enter lecture section code for course number" + j + "\n");
-            lectureCodeList.add(userInput.nextLine());
-            System.out.print("Would you like to add another course? (Y/N)\n");
-            if ((userInput.nextLine().equals("N"))) {
-                Continue = false;
-            }
-            j++;
-        }*/
-
-
         HtmlPage rosiMain = wc.getPage("https://sws.rosi.utoronto.ca/sws/auth/login.do;jsessionid=A3ECBAED3E6597DFAA349EB3A2915A71.w2?main.dispatch");
-
-        //System.out.print(rosiMain.asXml());
-
 
         HtmlSubmitInput loginBtn = rosiMain.getFirstByXPath("//input[@value='Login']");
         HtmlTextInput uname = rosiMain.getFirstByXPath("//input[@id='personId']");
         HtmlPasswordInput pword = rosiMain.getFirstByXPath("//input[@id='pin']");
 
-
         uname.setValueAttribute(userUName);
         pword.setValueAttribute(userPWord);
 
         HtmlPage loggedIn = loginBtn.click();
-        //System.out.print(loggedIn.asXml());
-        System.out.print("Logging in and accessing course information...\n");
+        System.out.print("Logging in and accessing course page...\n");
+
         //Am logged in
         int i = 0;
 
@@ -114,15 +88,9 @@ public class Main {
 
                 //which manage courses is this?
                 HtmlAnchor manageBtn = loggedIn.getAnchorByText("Manage Courses");
-
                 loggedIn = manageBtn.click();
 
-
                 //At course selection
-
-                //String lecString = "//input[@value='"+ lectureCodeList.get(i)+"']";
-                //System.out.print(lecString);
-
                 HtmlTextInput courseCode = loggedIn.getFirstByXPath("//input[@id='code']");
                 HtmlTextInput sectionCode = loggedIn.getFirstByXPath("//input[@id='sectionCode']");
                 HtmlSubmitInput courseSubmit = loggedIn.getFirstByXPath("//input[@name='viewCourse.dispatch']");
@@ -131,7 +99,7 @@ public class Main {
                 sectionCode.setValueAttribute(sectionCodeList.get(i));
 
                 loggedIn = courseSubmit.click();
-                //System.out.println(loggedIn.asText());
+
                 try {
                     if (!loggedIn.getFirstByXPath("//img[@src='/sws/images/warning.gif']").equals(null)) {
                         System.out.println("Rosi issued a warning, class may not be available");
@@ -144,11 +112,6 @@ public class Main {
                 loggedIn = courseSubmit.click();
                 HtmlSubmitInput addSection = loggedIn.getFirstByXPath("//input[@name='modifyCourse.dispatch']");
                 loggedIn = addSection.click();
-                //System.out.println(loggedIn.asXml());
-
-
-                //System.out.print(loggedIn.asText());
-
 
                 i++;
                 System.out.println("Successfully added course");
@@ -156,18 +119,7 @@ public class Main {
             catch(Exception e){
                 System.out.println("Failed to add course");
             }
-
         }
-
-
-
-
-
-        //HtmlAnchor loginLink = rosiMain.getAnchorByHref()
-
-
-
-
 
     }
 
