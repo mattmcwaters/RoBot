@@ -10,8 +10,9 @@ import java.util.List;
 /**
  * Created by Matt on 2015-06-17.
  */
-public class GUI extends JFrame {
+public class standardGUI extends JFrame {
     public static JButton b = new JButton("Enrol");
+
     public java.util.List<String> courseCodeList = new ArrayList<String>();
     public List<String> sectionCodeList = new ArrayList<String>();
     public List<String> lectureCodeList = new ArrayList<String>();
@@ -69,7 +70,7 @@ public class GUI extends JFrame {
     JTextField lectureFive = new JTextField("Lecture Section");
     JLabel labelFive = new JLabel("Class 5");
 
-    public GUI() {
+    public standardGUI() {
         super("RoBot");
         setSize(400, 300);
         setResizable(true);
