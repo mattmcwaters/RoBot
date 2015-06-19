@@ -18,26 +18,10 @@ import java.util.logging.Level;
 
 
 public class Main {
-
     public static void main(String [] args) throws IOException {
-        GUI userInterface = new GUI();
-        PrintStream printStream = new PrintStream(new customConsole(userInterface.textArea));
-
-        PrintStream standardOut = System.out;
-        PrintStream standardErr = System.err;
-
-        System.setOut(printStream);
-        System.setErr(printStream);
-
-
-        List<String> courseCodeList = new ArrayList<String>();
-        List<String> sectionCodeList = new ArrayList<String>();
-        List<String> lectureCodeList = new ArrayList<String>();
-
-        String userUName;
-        String userPWord;
-
-        while(!userInterface.isPressed()){
+        menuGUI menu = new menuGUI();
+        boolean Continue = true;
+        while(Continue){
             try {
                 // to sleep 10 seconds
                 Thread.sleep(1);
@@ -47,127 +31,120 @@ public class Main {
                 // you probably want to quit if the thread is interrupted
                 return;
             }
-        }
-        System.out.println("Populating arrays...");
-        courseCodeList = userInterface.getCourses();
-        lectureCodeList = userInterface.getLecture();
-        sectionCodeList = userInterface.getSessional();
-        userUName = userInterface.getUser();
-        userPWord = userInterface.getPass();
-
-
-        LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
-
-        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
-        java.util.logging.Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.OFF);
-
-
-
-        WebClient wc = new WebClient();
-
-        boolean Continue = true;
-
-
-        Scanner userInput = new Scanner(System.in);
-        int j = 1;
-
-        /*
-        while(Continue) {
-            System.out.print("Please enter course number " + j + "\n");
-            courseCodeList.add(userInput.nextLine());
-            System.out.print("Please enter section code for course number " + j + "\n");
-            sectionCodeList.add(userInput.nextLine());
-            System.out.print("Please enter lecture section code for course number" + j + "\n");
-            lectureCodeList.add(userInput.nextLine());
-            System.out.print("Would you like to add another course? (Y/N)\n");
-            if ((userInput.nextLine().equals("N"))) {
+            if(menu.isPressed().equals("Standard")){
                 Continue = false;
             }
-            j++;
-        }*/
-
-
-        HtmlPage rosiMain = wc.getPage("https://sws.rosi.utoronto.ca/sws/auth/login.do;jsessionid=A3ECBAED3E6597DFAA349EB3A2915A71.w2?main.dispatch");
-
-        //System.out.print(rosiMain.asXml());
-
-
-        HtmlSubmitInput loginBtn = rosiMain.getFirstByXPath("//input[@value='Login']");
-        HtmlTextInput uname = rosiMain.getFirstByXPath("//input[@id='personId']");
-        HtmlPasswordInput pword = rosiMain.getFirstByXPath("//input[@id='pin']");
-
-
-        uname.setValueAttribute(userUName);
-        pword.setValueAttribute(userPWord);
-
-        HtmlPage loggedIn = loginBtn.click();
-        //System.out.print(loggedIn.asXml());
-        System.out.print("Logging in and accessing course information...\n");
-        //Am logged in
-        int i = 0;
-
-        while(i < courseCodeList.size()){
-            try {
-                System.out.println("\nTrying to add Course Code: " + courseCodeList.get(i) + " with Section Code: " + sectionCodeList.get(i));
-                HtmlAnchor cEnrolBtn = loggedIn.getAnchorByHref("/sws/reg/main.do?main.dispatch");
-                loggedIn = cEnrolBtn.click();
-
-                //which manage courses is this?
-                HtmlAnchor manageBtn = loggedIn.getAnchorByText("Manage Courses");
-
-                loggedIn = manageBtn.click();
-
-
-                //At course selection
-
-                //String lecString = "//input[@value='"+ lectureCodeList.get(i)+"']";
-                //System.out.print(lecString);
-
-                HtmlTextInput courseCode = loggedIn.getFirstByXPath("//input[@id='code']");
-                HtmlTextInput sectionCode = loggedIn.getFirstByXPath("//input[@id='sectionCode']");
-                HtmlSubmitInput courseSubmit = loggedIn.getFirstByXPath("//input[@name='viewCourse.dispatch']");
-
-                courseCode.setValueAttribute(courseCodeList.get(i));
-                sectionCode.setValueAttribute(sectionCodeList.get(i));
-
-                loggedIn = courseSubmit.click();
-                //System.out.println(loggedIn.asText());
-                try {
-                    if (!loggedIn.getFirstByXPath("//img[@src='/sws/images/warning.gif']").equals(null)) {
-                        System.out.println("Rosi issued a warning, class may not be available");
-                    }
-                } catch (Exception e) {
-
-                }
-                HtmlRadioButtonInput lecSection = loggedIn.getFirstByXPath("//input[@value='LEC," + lectureCodeList.get(i) + "']");
-                lecSection.setChecked(true);
-                loggedIn = courseSubmit.click();
-                HtmlSubmitInput addSection = loggedIn.getFirstByXPath("//input[@name='modifyCourse.dispatch']");
-                loggedIn = addSection.click();
-                //System.out.println(loggedIn.asXml());
-
-
-                //System.out.print(loggedIn.asText());
-
-
-                i++;
-                System.out.println("Successfully added course");
+            if(menu.isPressed().equals("Waitlist")){
+                Continue = false;
             }
-            catch(Exception e){
-                System.out.println("Failed to add course");
-            }
-
         }
 
 
+        if(menu.isPressed().equals("Standard")){
+            standardGUI userInterface = new standardGUI("Standard");
+            userInterface.setVisible(true);
+            menu.setVisible(false);
+
+            PrintStream printStream = new PrintStream(new customConsole(userInterface.textArea));
+            PrintStream standardOut = System.out;
+            PrintStream standardErr = System.err;
+            System.setOut(printStream);
+            System.setErr(printStream);
+
+            List<String> courseCodeList = new ArrayList<String>();
+            List<String> sectionCodeList = new ArrayList<String>();
+            List<String> lectureCodeList = new ArrayList<String>();
+
+            String userUName;
+            String userPWord;
+
+            while(!userInterface.isPressed()){
+                try {
+                    // to sleep 10 seconds
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    // recommended because catching InterruptedException clears interrupt flag
+                    Thread.currentThread().interrupt();
+                    // you probably want to quit if the thread is interrupted
+                    return;
+                }
+            }
+            System.out.println("Populating arrays...");
+            courseCodeList = userInterface.getCourses();
+            lectureCodeList = userInterface.getLecture();
+            sectionCodeList = userInterface.getSessional();
+            userUName = userInterface.getUser();
+            userPWord = userInterface.getPass();
+
+
+            LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+
+            java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
+            java.util.logging.Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.OFF);
 
 
 
-        //HtmlAnchor loginLink = rosiMain.getAnchorByHref()
+            WebClient wc = new WebClient();
 
+            HtmlPage rosiMain = wc.getPage("https://sws.rosi.utoronto.ca/sws/auth/login.do;jsessionid=A3ECBAED3E6597DFAA349EB3A2915A71.w2?main.dispatch");
 
+            HtmlSubmitInput loginBtn = rosiMain.getFirstByXPath("//input[@value='Login']");
+            HtmlTextInput uname = rosiMain.getFirstByXPath("//input[@id='personId']");
+            HtmlPasswordInput pword = rosiMain.getFirstByXPath("//input[@id='pin']");
 
+            uname.setValueAttribute(userUName);
+            pword.setValueAttribute(userPWord);
 
+            HtmlPage loggedIn = loginBtn.click();
+            System.out.print("Logging in and accessing course page...\n");
+
+            //Am logged in
+            int i = 0;
+
+            while(i < courseCodeList.size()){
+                try {
+                    System.out.println("\nTrying to add Course Code: " + courseCodeList.get(i) + " with Section Code: " + sectionCodeList.get(i));
+                    HtmlAnchor cEnrolBtn = loggedIn.getAnchorByHref("/sws/reg/main.do?main.dispatch");
+                    loggedIn = cEnrolBtn.click();
+
+                    //which manage courses is this?
+                    HtmlAnchor manageBtn = loggedIn.getAnchorByText("Manage Courses");
+                    loggedIn = manageBtn.click();
+
+                    //At course selection
+                    HtmlTextInput courseCode = loggedIn.getFirstByXPath("//input[@id='code']");
+                    HtmlTextInput sectionCode = loggedIn.getFirstByXPath("//input[@id='sectionCode']");
+                    HtmlSubmitInput courseSubmit = loggedIn.getFirstByXPath("//input[@name='viewCourse.dispatch']");
+
+                    courseCode.setValueAttribute(courseCodeList.get(i));
+                    sectionCode.setValueAttribute(sectionCodeList.get(i));
+
+                    loggedIn = courseSubmit.click();
+
+                    try {
+                        if (!loggedIn.getFirstByXPath("//img[@src='/sws/images/warning.gif']").equals(null)) {
+                            System.out.println("Rosi issued a warning, class may not be available");
+                        }
+                    } catch (Exception e) {
+
+                    }
+                    HtmlRadioButtonInput lecSection = loggedIn.getFirstByXPath("//input[@value='LEC," + lectureCodeList.get(i) + "']");
+                    lecSection.setChecked(true);
+                    loggedIn = courseSubmit.click();
+                    HtmlSubmitInput addSection = loggedIn.getFirstByXPath("//input[@name='modifyCourse.dispatch']");
+                    loggedIn = addSection.click();
+
+                    i++;
+                    System.out.println("Successfully added course");
+                }
+                catch(Exception e){
+                    System.out.println("Failed to add course");
+                }
+            }
+        }
+        if(menu.isPressed().equals("Waitlist")){
+            //Start waitlist enrol GUI
+        }
 
     }
 
