@@ -19,6 +19,7 @@ public class standardGUI extends JFrame {
     public boolean buttonPressed = false;
     public String user;
     public String pass;
+    public Long waitTime;
 
     public static JTextArea textArea = new JTextArea(50, 10);
 
@@ -32,15 +33,18 @@ public class standardGUI extends JFrame {
     JPanel pFive = new JPanel();
 
 
-    String choices[]={"F", "S"};
+    String choices[]={"F", "S", "Y"};
     String numberChoices[]={"-", "1", "2", "3", "4", "5"};
 
 
     JLabel userLabel = new JLabel("Rosi username");
-    JTextField username = new JTextField();
+    JTextField username = new JTextField("");
+
 
     JLabel passLabel = new JLabel("Password");
-    JTextField password = new JPasswordField();
+    JTextField password = new JPasswordField("");
+
+
 
     JLabel countLabel = new JLabel("Course Count");
     JComboBox courseCount = new JComboBox(numberChoices);
@@ -70,20 +74,43 @@ public class standardGUI extends JFrame {
     JTextField lectureFive = new JTextField("Lecture Section");
     JLabel labelFive = new JLabel("Class 5");
 
+    JLabel hoursLabel=null;
+    JTextField hours=null;
+    JScrollPane sp = new JScrollPane(textArea);
+
     public standardGUI(String option) {
+
         super("RoBot");
-        setSize(400, 300);
+        sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+
+        if(option.equals("Standard")){
+             hoursLabel = new JLabel("Hours until bot starts");
+             hours = new JTextField();
+
+        }
+        else if(option.equals("Waitlist")){
+             hoursLabel = new JLabel("Minutes between attempts");
+             hours = new JTextField();
+
+
+        }
+
+        setSize(550, 700);
         setResizable(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         layout.setLayout(new BoxLayout(layout, BoxLayout.Y_AXIS));
 
         username.setPreferredSize(new Dimension(80, 20));
         password.setPreferredSize( new Dimension( 80, 20 ) );
+        hours.setPreferredSize(new Dimension(20, 20));
 
         userInfo.add(userLabel);
         userInfo.add(username);
         userInfo.add(passLabel);
         userInfo.add(password);
+        userInfo.add(hoursLabel);
+        userInfo.add(hours);
 
         countPanel.add(countLabel);
         countPanel.add(courseCount);
@@ -121,16 +148,36 @@ public class standardGUI extends JFrame {
         layout.add(pFour);
         layout.add(pFive);
         layout.add(b);
-        layout.add(textArea);
+        //layout.add(textArea);
+
         hideAllPanels();
         b.addActionListener(new ActionListener() {
                                     public void actionPerformed(ActionEvent e) {
+                                        if(username.getText().equals("")){
+                                            System.out.println("Please enter a username!");
+                                            return;
+                                        }
+                                        if(password.getText().equals("")){
+                                            System.out.println("Please enter a password!");
+                                            return;
+                                        }
+
                                         courseCodeList.add(courseOne.getText());
                                         courseCodeList.add(courseTwo.getText());
                                         sectionCodeList.add(choices[cbOne.getSelectedIndex()]);
                                         sectionCodeList.add(choices[cbTwo.getSelectedIndex()]);
                                         lectureCodeList.add(lectureOne.getText());
                                         lectureCodeList.add(lectureTwo.getText());
+                                        if(hours.getText().equals("")){
+                                            waitTime = 0L;
+                                        }
+                                        else if(hours.getText().matches(".*\\d.*")){
+                                            waitTime = Long.valueOf(hours.getText()).longValue();
+                                        }
+                                        else{
+                                            System.out.println("Enter only numbers in the hours field");
+                                            return;
+                                        }
 
                                         user = username.getText();
                                         pass = password.getText();
@@ -170,8 +217,8 @@ public class standardGUI extends JFrame {
                 }
             }
         });
-
-
+        textArea.setEditable(false);
+        layout.add(sp);
         add(layout);
 
         setVisible(true);
@@ -201,6 +248,9 @@ public class standardGUI extends JFrame {
         return pass;
     }
 
+    public int getChoice(){
+        return courseCount.getSelectedIndex();
+    }
     private void showAllPanels(){
         pOne.setVisible(true);
         pTwo.setVisible(true);
