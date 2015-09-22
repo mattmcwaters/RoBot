@@ -225,7 +225,6 @@ public class Main {
                 pword.setValueAttribute(userPWord);
 
                 HtmlPage loggedIn = loginBtn.click();
-
                 //Am logged in
                 int i = 0;
 
@@ -242,11 +241,17 @@ public class Main {
                             List buttons = loggedIn.getByXPath("//a");
 
                             HtmlAnchor manageBtn = (HtmlAnchor) buttons.get(27);
-                            loggedIn = manageBtn.click();
+                            if(manageBtn.asXml().contains("edit.do?editCourse")){
+                                loggedIn = manageBtn.click();
+                            }
 
                             TimeUnit.SECONDS.sleep(RandomUtils.nextInt(5, 10));
                             //At course selection
                             HtmlTextInput courseCode = loggedIn.getFirstByXPath("//input[@id='code']");
+
+
+
+
                             HtmlTextInput sectionCode = loggedIn.getFirstByXPath("//input[@id='sectionCode']");
                             HtmlSubmitInput courseSubmit = loggedIn.getFirstByXPath("//input[@name='viewCourse.dispatch']");
 
